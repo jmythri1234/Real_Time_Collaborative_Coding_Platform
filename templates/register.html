@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | CodeTogether</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b1020;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: #131b2f;
+            border: 1px solid #2c3855;
+            border-radius: 16px;
+            padding: 38px;
+            box-shadow: 0 20px 60px #00000040;
+        }
+
+        .logo {
+            text-align: center;
+            color: #7c9cff;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aab5ce;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce4f7;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #364361;
+            border-radius: 8px;
+            background: #0b1020;
+            color: white;
+            outline: none;
+            margin-bottom: 19px;
+        }
+
+        input:focus {
+            border-color: #7c9cff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #5279ff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3e66ec;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 22px;
+            color: #aab5ce;
+            font-size: 14px;
+        }
+
+        a {
+            color: #8ba6ff;
+            text-decoration: none;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: #aab5ce;
+        }
+
+        .messages {
+            margin-bottom: 18px;
+        }
+
+        .message {
+            padding: 11px;
+            border-radius: 7px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #48212b;
+            color: #ffb7c2;
+        }
+
+        .success {
+            background: #173c32;
+            color: #a5f3ce;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">⌘ CodeTogether</div>
+
+        <h1>Create Account</h1>
+
+        <p class="subtitle">
+            Join your team and start coding together.
+        </p>
+
+        <div class="messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+        <form action="/register" method="POST">
+
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                maxlength="80"
+                autocomplete="username"
+                required
+            >
+
+            <label for="email">Email Address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                maxlength="120"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="At least 8 characters"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+
+            <button type="submit">Create Account →</button>
+
+        </form>
+
+        <p class="bottom-text">
+            Already have an account?
+            <a href="/login">Sign In</a>
+        </p>
+
+        <a href="/" class="home-link">← Back to Home</a>
+
+    </div>
+
+</body>
+</html>

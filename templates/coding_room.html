@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeTogether | Coding Room</title>
+
+    <script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 5%;
+            background: #111827;
+            border-bottom: 1px solid #334155;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #a78bfa;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .room-code {
+            background: #1e293b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        button,
+        .dashboard-link {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .copy-btn {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .dashboard-link {
+            background: #334155;
+            color: white;
+        }
+
+        .container {
+            padding: 25px 5%;
+        }
+
+        .room-heading {
+            margin-bottom: 22px;
+        }
+
+        .room-heading h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .room-heading p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .editor-panel,
+        .chat-panel {
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #1e293b;
+            flex-wrap: wrap;
+        }
+
+        .panel-header h2 {
+            font-size: 16px;
+        }
+
+        .language-badge {
+            background: #7c3aed;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        #codeEditor {
+            width: 100%;
+            min-height: 480px;
+            padding: 20px;
+            resize: vertical;
+            border: none;
+            outline: none;
+            background: #0b1120;
+            color: #e2e8f0;
+            font-family: Consolas, monospace;
+            font-size: 15px;
+            line-height: 1.7;
+            tab-size: 4;
+        }
+
+        .editor-footer {
+            padding: 12px 16px;
+            color: #94a3b8;
+            font-size: 12px;
+            background: #1e293b;
+        }
+
+        .chat-panel {
+            display: flex;
+            flex-direction: column;
+            min-height: 560px;
+        }
+
+        #chatMessages {
+            flex: 1;
+            height: 380px;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .message {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .message strong {
+            color: #c4b5fd;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .message p {
+            color: #e2e8f0;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 8px;
+            padding: 14px;
+            border-top: 1px solid #334155;
+        }
+
+        #chatInput {
+            min-width: 0;
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            outline: none;
+            background: #0f172a;
+            color: white;
+        }
+
+        .send-btn {
+            background: #7c3aed;
+            color: white;
+        }
+
+        #connectionStatus {
+            font-size: 12px;
+            color: #fbbf24;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #fbbf24;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 850px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            #codeEditor {
+                min-height: 350px;
+            }
+
+            .chat-panel {
+                min-height: 400px;
+            }
+
+            #chatMessages {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px 4%;
+            }
+
+            .room-heading h1 {
+                font-size: 23px;
+            }
+
+            #codeEditor {
+                font-size: 13px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">CodeTogether</div>
+
+        <div class="header-actions">
+            <div class="room-code">
+                Room Code: <strong id="roomCodeText">{{ room.room_code }}</strong>
+            </div>
+
+            <button class="copy-btn" id="copyRoomBtn" type="button">
+                Copy Room Code
+            </button>
+
+            <a href="{{ url_for('dashboard') }}" class="dashboard-link">
+                Dashboard
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="room-heading">
+            <h1>{{ room.name }}</h1>
+
+            <p>
+                Welcome, {{ current_user.username }}!
+                Collaborate with your team in real time.
+            </p>
+        </section>
+
+        <section class="workspace">
+
+            <!-- CODE EDITOR -->
+
+            <div class="editor-panel">
+
+                <div class="panel-header">
+                    <h2>💻 Code Editor</h2>
+
+                    <span class="language-badge" id="languageBadge">
+                        {{ room.language }}
+                    </span>
+
+                    <span id="connectionStatus">
+                        <span class="status-dot"></span>
+                        Connecting...
+                    </span>
+                </div>
+
+                <textarea
+                    id="codeEditor"
+                    spellcheck="false"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    aria-label="Collaborative code editor"
+                    placeholder="Start writing your code here..."></textarea>
+
+                <div class="editor-footer">
+                    Changes are automatically saved and synchronized
+                    with other users in this room.
+                </div>
+
+            </div>
+
+            <!-- CHAT -->
+
+            <div class="chat-panel">
+
+                <div class="panel-header">
+                    <h2>💬 Team Chat</h2>
+                    <span style="font-size: 12px; color: #94a3b8;">
+                        Live messages
+                    </span>
+                </div>
+
+                <div id="chatMessages" aria-live="polite">
+                    <div class="message">
+                        <strong>CodeTogether</strong>
+                        <p>Welcome to the coding room! Start collaborating.</p>
+                    </div>
+                </div>
+
+                <form class="chat-form" id="chatForm">
+                    <input
+                        type="text"
+                        id="chatInput"
+                        maxlength="500"
+                        placeholder="Type a message..."
+                        autocomplete="off"
+                        required>
+
+                    <button type="submit" class="send-btn">
+                        Send
+                    </button>
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        const roomCode = {{ room.room_code | tojson }};
+        const initialLanguage = {{ room.language | tojson }};
+
+        const codeEditor = document.getElementById("codeEditor");
+        const languageBadge = document.getElementById("languageBadge");
+        const connectionStatus = document.getElementById("connectionStatus");
+        const chatMessages = document.getElementById("chatMessages");
+        const chatForm = document.getElementById("chatForm");
+        const chatInput = document.getElementById("chatInput");
+        const copyRoomBtn = document.getElementById("copyRoomBtn");
+
+        let applyingRemoteCode = false;
+        let codeSyncTimer = null;
+
+        languageBadge.textContent = initialLanguage;
+
+        const socket = io();
+
+        socket.on("connect", function () {
+            connectionStatus.textContent = "Connected";
+            connectionStatus.style.color = "#4ade80";
+
+            socket.emit("join_room", {
+                room_code: roomCode
+            });
+        });
+
+        socket.on("disconnect", function () {
+            connectionStatus.textContent = "Disconnected";
+            connectionStatus.style.color = "#f87171";
+        });
+
+        socket.on("connect_error", function (error) {
+            console.error("Socket.IO connection failed:", error);
+            console.error("Socket.IO transport:", socket.io.engine?.transport?.name);
+
+            connectionStatus.textContent = "Connection error";
+            connectionStatus.style.color = "#f87171";
+       });
+
+        // Load the saved code when entering the room.
+
+        socket.on("load_code", function (data) {
+            applyingRemoteCode = true;
+
+            codeEditor.value = data.code || "";
+            languageBadge.textContent = data.language || initialLanguage;
+
+            applyingRemoteCode = false;
+        });
+
+        // Receive code changes from other users.
+
+        socket.on("code_update", function (data) {
+            const oldStart = codeEditor.selectionStart;
+            const oldEnd = codeEditor.selectionEnd;
+
+            applyingRemoteCode = true;
+
+            codeEditor.value = data.code || "";
+
+            codeEditor.setSelectionRange(
+                Math.min(oldStart, codeEditor.value.length),
+                Math.min(oldEnd, codeEditor.value.length)
+            );
+
+            applyingRemoteCode = false;
+        });
+
+        // Send code changes after a short pause in typing.
+
+        codeEditor.addEventListener("input", function () {
+            if (applyingRemoteCode) {
+                return;
+            }
+
+            clearTimeout(codeSyncTimer);
+
+            codeSyncTimer = setTimeout(function () {
+                if (socket.connected) {
+                    socket.emit("code_change", {
+                        room_code: roomCode,
+                        code: codeEditor.value
+                    });
+                }
+            }, 250);
+        });
+
+        // Add a chat message safely to the page.
+
+        function addMessage(username, message) {
+            const messageBox = document.createElement("div");
+            messageBox.className = "message";
+
+            const nameElement = document.createElement("strong");
+            nameElement.textContent = username;
+
+            const textElement = document.createElement("p");
+            textElement.textContent = message;
+
+            messageBox.appendChild(nameElement);
+            messageBox.appendChild(textElement);
+
+            chatMessages.appendChild(messageBox);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Send chat messages.
+
+        chatForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const message = chatInput.value.trim();
+
+            if (!message || !socket.connected) {
+                return;
+            }
+
+            socket.emit("chat_message", {
+                room_code: roomCode,
+                message: message
+            });
+
+            chatInput.value = "";
+            chatInput.focus();
+        });
+
+        // Receive messages from other users in this room.
+
+        socket.on("new_message", function (data) {
+            addMessage(data.username, data.message);
+        });
+
+        // Copy the room code so another user can join.
+
+        copyRoomBtn.addEventListener("click", async function () {
+            try {
+                await navigator.clipboard.writeText(roomCode);
+
+                copyRoomBtn.textContent = "Copied!";
+
+                setTimeout(function () {
+                    copyRoomBtn.textContent = "Copy Room Code";
+                }, 1800);
+
+            } catch (error) {
+                window.prompt("Copy this room code:", roomCode);
+            }
+        });
+
+        // Preserve indentation when pressing Enter.
+
+        codeEditor.addEventListener("keydown", function (event) {
+            if (event.key === "Tab") {
+                event.preventDefault();
+
+                const start = codeEditor.selectionStart;
+                const end = codeEditor.selectionEnd;
+
+                codeEditor.setRangeText(
+                    "    ",
+                    start,
+                    end,
+                    "end"
+                );
+
+                codeEditor.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                );
+            }
+        });
+    </script>
+
+</body>
+</html>

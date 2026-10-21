@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeTogether | Real-Time Collaborative Coding</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0b1020;
+            color: #ffffff;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 8%;
+            border-bottom: 1px solid #252d43;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #7c9cff;
+        }
+
+        nav a {
+            color: #e1e7f5;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 15px;
+        }
+
+        .hero {
+            min-height: 78vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+            padding: 70px 8%;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #182448;
+            color: #9db4ff;
+            border-radius: 25px;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: clamp(38px, 5vw, 62px);
+            line-height: 1.15;
+            margin-bottom: 25px;
+        }
+
+        h1 span {
+            color: #7c9cff;
+        }
+
+        .description {
+            color: #aab5ce;
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 32px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #5279ff;
+            color: white;
+        }
+
+        .secondary {
+            border: 1px solid #53617e;
+            color: white;
+        }
+
+        .editor-card {
+            width: 100%;
+            max-width: 460px;
+            background: #131b2f;
+            border: 1px solid #2c3855;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px #00000055;
+        }
+
+        .editor-header {
+            padding: 17px;
+            background: #1d2942;
+            color: #cbd6f3;
+            font-size: 14px;
+        }
+
+        .editor-body {
+            padding: 25px;
+            font-family: monospace;
+            font-size: 15px;
+            line-height: 2;
+            color: #d5def5;
+            overflow-wrap: anywhere;
+        }
+
+        .keyword {
+            color: #c792ea;
+        }
+
+        .function {
+            color: #82aaff;
+        }
+
+        .string {
+            color: #c3e88d;
+        }
+
+        .features {
+            padding: 55px 8% 75px;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            margin-bottom: 35px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .feature {
+            padding: 28px;
+            background: #131b2f;
+            border: 1px solid #28344e;
+            border-radius: 12px;
+        }
+
+        .feature h3 {
+            margin: 15px 0;
+            color: #a5b8ff;
+        }
+
+        .feature p {
+            color: #aab5ce;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            border-top: 1px solid #252d43;
+            color: #aab5ce;
+        }
+
+        @media (max-width: 850px) {
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 20px 5%;
+            }
+
+            nav a {
+                margin-left: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            nav a {
+                margin-left: 0;
+                margin-right: 10px;
+            }
+
+            .hero {
+                padding: 45px 6%;
+            }
+
+            .features {
+                padding: 40px 6%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">⌘ CodeTogether</div>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+            <a href="/register">Get Started</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="badge">⚡ REAL-TIME COLLABORATIVE CODING</div>
+
+            <h1>
+                Code Together.<br>
+                <span>Build Together.</span>
+            </h1>
+
+            <p class="description">
+                A collaborative coding workspace where developers
+                can create coding rooms, share code, and work together
+                in real time from anywhere.
+            </p>
+
+            <div class="buttons">
+                <a href="/register" class="btn primary">
+                    Get Started →
+                </a>
+
+                <a href="/login" class="btn secondary">
+                    Sign In
+                </a>
+            </div>
+
+        </div>
+
+        <div class="editor-card">
+
+            <div class="editor-header">
+                ● ● ● &nbsp; collaborative_editor.py
+            </div>
+
+            <div class="editor-body">
+                <div><span class="keyword">def</span>
+                    <span class="function">build_together</span>():</div>
+
+                <div>&nbsp;&nbsp;team = <span class="string">"Developers"</span></div>
+
+                <div>&nbsp;&nbsp;ideas = <span class="string">"Shared"</span></div>
+
+                <div>&nbsp;&nbsp;success = <span class="keyword">True</span></div>
+
+                <br>
+
+                <div>&nbsp;&nbsp;<span class="keyword">return</span>
+                    <span class="string">"Great things happen together!"</span></div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="features">
+
+        <h2>Everything You Need to Code Together</h2>
+
+        <div class="feature-grid">
+
+            <div class="feature">
+                <div style="font-size: 32px;">💻</div>
+                <h3>Live Code Editing</h3>
+                <p>
+                    Collaborate on code in a shared workspace
+                    with real-time updates.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div style="font-size: 32px;">🤝</div>
+                <h3>Shared Coding Rooms</h3>
+                <p>
+                    Create a room and invite others to work
+                    together on coding projects.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div style="font-size: 32px;">💬</div>
+                <h3>Team Communication</h3>
+                <p>
+                    Communicate with collaborators while
+                    working on the same project.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+        © 2026 CodeTogether | Real-Time Collaborative Coding Platform
+    </footer>
+
+</body>
+</html>
